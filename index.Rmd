@@ -1,8 +1,8 @@
 ---
 title : "Enrichissement de données de caisses à partir d’informations nutritionnelles"
 subtitle : "Une approche par appariement flou sur données de grande dimension"
-author : "Lino Galiana* ; Milena Suarez-Castillo** ; Lionel Wilner*"
-institute : "*D2E, **SSP-lab"
+author : "Lino Galiana(*) ; Milena Suarez-Castillo(**) ; Lionel Wilner(*)"
+institute : "(*) D2E, (**) SSP-lab"
 date : "9 Décembre 2021"
 output :
     utilitr::utilitr_presentation:
@@ -22,7 +22,7 @@ options(htmltools.dir.version = FALSE)
 
 # Introduction
 
-## Objectif
+## Problématique (1/2)
 
 * Alimentation affecte variables de santé publique ayant un effet de premier ordre sur bien-être :
     + obésité
@@ -35,6 +35,37 @@ options(htmltools.dir.version = FALSE)
 * Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
 * Commencer par documenter les inégalités de "qualité" de consommation
     + Avant d'essayer de distinguer effets offre et demande
+
+
+---
+# Introduction
+
+## Problématique (2/2)
+
+* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de "qualité"
+    + Low-cost vs autres produits
+    + Bio vs agriculture traditionnelle
+* Besoin de données très fines pour distinguer les qualités nutritionnelles (Caillavet et al. 2020)
+* D'où l'utilisation de sources de collectes automatisées:
+    + Données d'enquête (notamment Budget des Familles) serviront à vérifier la cohérence voire caler
+    + Autres sources administratives pour contrôler la qualité des données
+
+---
+# Introduction
+
+## Enjeux
+
+* Besoin d'enrichissements multiples:
+    + Sur la dimension géographiques
+    + Sur la dimension produit
+* Méthode des appariements flous 
+    + Compenser absence d'identifiants pour appariements exacts
+    + Noms produits
+    + Adresse magasins
+* Catégorisation pour réduire le nombre de paires
+    + COICOP
+    + Département
+* Approche généralisable à de nombreux problèmes de la stat publique
 
 
 

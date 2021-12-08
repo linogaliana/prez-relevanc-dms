@@ -447,13 +447,6 @@ knitr::include_graphics("images/siamese_ex.png")
 # Appariement magasin
 
 ```{r}
-knitr::include_graphics("images/siamese_ex.png")
-```
-
----
-# Appariement magasin
-
-```{r}
 knitr::include_graphics("images/macro_geoloc.png")
 ```
 

@@ -120,6 +120,7 @@ td[style*="text-align:justify;"] {
 
 table td, table th {
   padding: 3px 5px 3px 5px;
+  font-size: 13px;
 }
 thead, tfoot, tr:nth-child(even) {
   background: #eee;

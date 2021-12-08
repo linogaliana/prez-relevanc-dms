@@ -240,12 +240,12 @@ knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
 # Pipeline de data-cleaning
 ## Deuxième étape: normalisation des noms de produits
 
-4. Transformation en suite d'unités signifiantes (\textit{token})
-    + Retrait des \textit{stopwords} qui n'apporte pas d'info sur le produit 
-    + Mots comme token
-    + \texttt{nltk} plutôt que \texttt{spaCy}
-    + Pas de \textit{stemming}
-    + Les n-grams sont définis au niveau de la requête \texttt{Elastic}
+4. Transformation en suite d'unités signifiantes (`token`)
+    + Retrait des _stopwords_ qui n'apportent pas d'info sur le produit 
+    + Mots comme _token_
+    + `nltk` plutôt que `spaCy`
+    + Pas de `stemming`
+    + Les n-grams sont définis au niveau de la requête `Elastic`
 
 ```{r}
 knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")

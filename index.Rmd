@@ -20,26 +20,23 @@ options(htmltools.dir.version = FALSE)
 
 
 
-# Enjeu
+# Introduction
 
-## Pourquoi ne pas se contenter des documentations existantes ?
+## Objectif
+
+* Alimentation affecte variables de santé publique ayant un effet de premier ordre sur bien-être :
+    + obésité
+    + mortalité différentielle
+* Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
+* Alcott et al. (2019) proposent une décomposition entre effets:
+    + d'offre (déserts alimentaires)
+    + de demande (préférences pour la \textit{junk food})
+* Facteurs sociaux et territoriaux interagissent
+* Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
+* Commencer par documenter les inégalités de "qualité" de consommation
+    + Avant d'essayer de distinguer effets offre et demande
 
 
-**1. Cibler les ressources pertinentes**
-
-- Eclatement de la documentation des écosystèmes `R` et `Python` ; <br>
-- Barrière linguistique : la grande majorité de la documentation est en anglais ; <br>
-- Niveaux hétérogènes
-<br><br>
-
---
-
-**2. Bénéficier de l'expérience d'utilisateurs** :
-
-- Diversité des cas d'usage de `R` ou `Python` dans le service public ; <br>
-- Multiplicité de *packages*, de qualité variable et parfois redondants ; <br>
-- Utiliser un langage pour un projet statistique n'implique pas les mêmes pratiques
-que pour un projet d'application
 
 ---
 # Panorama incomplet des ressources disponibles (1/2)

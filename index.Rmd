@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = FALSE)
 * Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
 * Alcott et al. (2019) proposent une décomposition entre effets:
     + d'offre (déserts alimentaires)
-    + de demande (préférences pour la \textit{junk food})
+    + de demande (préférences pour la _junk food})
 * Facteurs sociaux et territoriaux interagissent
 * Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
 * Commencer par documenter les inégalités de "qualité" de consommation
@@ -89,3 +89,93 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r}
 knitr::include_graphics("images/schema-structure.drawio.png")
 ```
+
+---
+
+# Critère de validation
+
+
+* `rapidfuzz.fuzz.partial_ratio(s1, s2)`: meilleure similarité entre la chaîne de caractère la plus courte `s1`, de longueur `n` et les `n`-grammes de  `s2`
+* Similarité : distance de Levenshtein (y compris transposition) normalisée par la longueur `n`
+*  `partial_ratio(s1, s2) > 0.65`
+
+```{r}
+knitr::include_graphics("images/partial_ratio.png")
+```
+
+---
+
+# Une distance adaptée à notre problème?
+
+La proximité de caractère n'implique pas nécessairement une proximité sémantique.
+
+| Libellé d'origine | Libellé du match |
+| --- | --- | 
+| oe poulet blanc fermier | poulet blanc fermier |
+| tarte chevre epinar co 	| epinar |
+|  lapin or sous alu 	| oeufs sous alu |
+
+* Test d'un plongement de mots: associer à un libellé un vecteur dans $\mathbb{R}^N$
+* En déduire une distance non exclusivement basée sur la chaîne de charactère
+
+---
+# Réseaux siamois 
+
+```{r}
+knitr::include_graphics("images/siamese.png")
+```
+
+---
+# Qu'est-ce que ça donne?  
+
+```{r}
+knitr::include_graphics("images/siamese_ex.png")
+```
+
+
+* Un appariement fondé sur la proximité entre représentation vectorielle des libellés? 
+  + Performant sur les libellés qui se ressemblent (même mot = même plongement)
+  + Des concepts appris, mais sur des produits de grande consommation, pour lesquels on a en général des echos 
+  + Qualité des matchs $\approx$ Pipeline Elastic, mais coûteux à intégrer à la pipeline avec d'autres critères (e.g. glucides non manquantes) de façon aussi flexible que ce que permet Elastic, et parfois difficile d'expliquer la proximité entre libellés qui a été apprise
+* Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic et ajuster la pipeline en fonction des erreurs repérées
+
+--- 
+# Appariement magasin
+
+```{r}
+knitr::include_graphics("images/siamese_ex.png")
+```
+
+--- 
+# Appariement magasin
+
+```{r}
+knitr::include_graphics("images/macro_geoloc.png")
+```
+
+--- 
+# Géolocalisation à partir de la BAN
+
+```{r}
+knitr::include_graphics("images/addok.png")
+```
+
+
+--- 
+# Géolocalisation par rapprochement à IRI
+
+* Appariement Exact: à partir d'un code interne magasin (par enseigne) disponible dans le répertoire IRI
+* Appariement Flou: à l'aide de la librarie python `recordLinkages`
+
+Recherche d'un match à partir de 
+* _Blocage:_ Code Postal; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse `string` et X,Y `PointGeo`. 
+    $$m_1 > 3 $$ 
+* _Blocage:_ Département; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse, Ville `string` et X,Y `PointGeo`
+    $$m_2 > 5 $$ 
+
+    $m_1 = 3 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 2  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) + \\ 
+    1.5  \times SimGeo(X,Y) + 0.5  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $ 
+    
+
+    $m_2 = 3 \times SimLev(Ville)\times (SimLev(Ville)>0.8) + 2 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 1  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) + \\ 
+    1  \times SimGeo(X,Y) + 1  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $

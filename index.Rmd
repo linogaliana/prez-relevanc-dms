@@ -742,7 +742,32 @@ En blanc la requête, en gris l'écho
 | FRANPRIX MONTROUGE MARKET | 37 RUE BARBES | 92120 MONTROUGE  | 
 
 
---
+---
 # Conclusion
+## Appariements
 
-TO BE COMPLETED
+* Appariements flous multiples:
+    + 98% des magasins géolocalisés, XX% des produits enrichis grâce à l'`OpenFood` ou `CIQUAL`
+    + Marges d'amélioration sur la validation *ex-post* des échos
+
+* Gains énormes à utiliser la technologie `ElasticSearch` en l'absence
+d'identifiants exacts:
+    + Recoder appariements flous en `r fontawesome::fa("python")` ou `r fontawesome::fa("r-project")` purs serait une mauvaise idée
+    + Prise en main minimale très rapide de l'outil (merci à ceux qui nous ont aidés ! `r emo::ji("thumbs_up")`)
+    + Encore des gains possibles
+    
+---
+# Conclusion
+## Perspectives
+
+* _Pipeline_ asynchrone du fait des données présentes dans des environnements différents
+
+* Enjeu de la temporalité des données
+    + `IRI`, `OpenFood` et les données de caisses sont des données qui évoluent
+    +  Privilégier l'API d'`OpenFood` pour la mise à jour ?
+    + `ElasticSearch` permet de tenir compte de critères de temporalité dans les requêtes et l'indexation
+
+* Outils existent pour améliorer l'entraînement des modèles et le déploiement de ceux-ci pour une mise à disposition:
+    + *Un exemple*: `MLFlow` sur `SSP-cloud`
+
+    

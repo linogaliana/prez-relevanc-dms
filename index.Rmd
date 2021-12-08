@@ -483,3 +483,64 @@ Recherche d'un match à partir de
 
     $m_2 = 3 \times SimLev(Ville)\times (SimLev(Ville)>0.8) + 2 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 1  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) + \\ 
     1  \times SimGeo(X,Y) + 1  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $
+
+---
+# Geolocalisation
+# Bilan (1/2)
+
+| Origine des $(x,y)$ | Magasins | Autre $(x,y)$ | Au moins 1 désaccord (>1km) |
+|---------------------|----------|---------------|-----------------------------|
+|           Relevanc  | 470      |    464        |  31                         |
+|         IRI: exact  | 3516      |    3465        |  412                         |
+|         IRI: flou  | 3428      |    3419        |  329                         |
+|         Addok-BAN  | 4089      |    0        |  0                         |
+|         NA  | 113      |    0        |  0                         |
+
+
+---
+# Geolocalisation
+# Bilan (2/2)
+
+                 
+Parmi les magasins géolocalisé en "IRI exact" et en "Addok-Ban", distance entre les deux options (m):
+
+| 10% | 50% | 80% | 90% |
+|-----|-----|-----|-----|
+|10 |  130 |  460 | 1150 |
+
+---
+# Siretisation
+
+```{r}
+knitr::include_graphics("images/macro_siret.png")
+```
+
+1. Appariement Flou: à l'aide de la librarie python \textit{recordLinkages} ($\approx$ IRI)
+2. Complétée, pour les magasins au plus gros CA (e.g. Géant Casino) par des recherches "à la main" via Elastic
+
+Recherche d'un match dans
+
+1. SIRUS 47.11, suceptible d'appartenir à l'enseigne Casino
+    + \textit{Blocage:} Code Postal; \textit{Champ comparé et noté:} Nom du magasin, Libellé d'enseigne, Adresse Ban \textit{(string)}, X,Y \textit{(Point géographique)}, \textit{Embedding 3D Nom du magasin + Enseigne} \textit{(Numeric)}
+2. SIRUS 47.11
+    + (CP)
+3. SIRUS 47.11 
+    + (DEP) \textit{Blocage:} Département; \textit{Champ comparé et noté:} Nom du magasin, Libellé d'enseigne, Adresse, Ville \textit{(string)} et X,Y \textit{(Point géographique)} , \textit{Embedding 3D Nom du magasin + Enseigne} \textit{(Numeric)}
+
+---
+# Siretisation
+## Exemples aléatoires
+
+| Nom magasin          | Adresse            | Ville           |
+|----------------------|--------------------|------------------|
+| PS ALLIGNY COSNE VIVAL | 18 ROUTE DE BOUHY | ALLIGNY COSNE  | 
+| NICE RAOUL BOSIO SPAR | 2 BIS RUE RAOUL BOSIO | NICE  | 
+| LP BASSENS LEADER PRICE | 23 AV DE LA SOMME | BASSENS  | 
+| PS DOMENE LE PETIT CASINO | PLACE DE STALINGRAD | DOMENE  | 
+| SEBASTOPOL FRANPRIX | 12-14 RUE SANTEUIL | PARIS  | 
+| SM CASINO ST PIERRE SUR DIVES SUPERMARCHE HYPER | ROUTE DE LISIEUX | ST PIERRE SUR DIVES  | 
+| POINT RETRAIT SM HARDRICOURT | 60 RUE DU VEXIN | HARDRICOURT  | 
+| ALYE FRANPRIX | RUE HENRI SPAAK | VERNOUILLET  | 
+| NEWFPMAG MONTROUGE FRANPRIX | 37 RUE BARBES | MONTROUGE  | 
+
+

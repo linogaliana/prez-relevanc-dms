@@ -28,12 +28,16 @@ knitr::opts_chunk$set(echo = FALSE)
 * Alimentation affecte variables de santé publique ayant un effet de premier ordre sur bien-être :
     + obésité
     + mortalité différentielle
-* Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
+
+--
+* Facteurs sociaux et territoriaux interagissent
+    + Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
+    + Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
+
+--
 * Alcott et al. (2019) proposent une décomposition entre effets:
     + d'offre (déserts alimentaires)
-    + de demande (préférences pour la _junk food})
-* Facteurs sociaux et territoriaux interagissent
-* Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
+    + de demande (préférences pour la \textit{junk food})
 * Commencer par documenter les inégalités de "qualité" de consommation
     + Avant d'essayer de distinguer effets offre et demande
 
@@ -43,10 +47,12 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Problématique (2/2)
 
-* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de "qualité"
+* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de *"qualité"*
     + Low-cost vs autres produits
     + Bio vs agriculture traditionnelle
 * Besoin de données très fines pour distinguer les qualités nutritionnelles (Caillavet et al. 2020)
+
+--
 * D'où l'utilisation de sources de collectes automatisées:
     + Données d'enquête (notamment Budget des Familles) serviront à vérifier la cohérence voire caler
     + Autres sources administratives pour contrôler la qualité des données
@@ -59,23 +65,28 @@ knitr::opts_chunk$set(echo = FALSE)
 * Besoin d'enrichissements multiples:
     + Sur la dimension géographiques
     + Sur la dimension produit
+
+--
 * Méthode des appariements flous 
     + Compenser absence d'identifiants pour appariements exacts
     + Noms produits
     + Adresse magasins
+
+--
 * Catégorisation pour réduire le nombre de paires
     + COICOP
     + Département
-* Approche généralisable à de nombreux problèmes de la stat publique
+
+Approche généralisable à de nombreux problèmes de la stat publique
 
 
 ---
 #  Données
 
-## RelevanC
+## `RelevanC`
 
 * Données de caisses du groupe Casino
-    + Casino, Monoprix, Franprix au niveau magasin et 
+    + Casino, Monoprix, Franprix au niveau magasin et cartes fidélité 
     + Leader Price et des petites chaînes (stations services, Sherpa...) au niveau magasin exclusivement
 * $\approx$ 11 000 magasins
 * $\approx$ 250 000 produits
@@ -84,11 +95,297 @@ knitr::opts_chunk$set(echo = FALSE)
 ---
 #  Données
 
-## RelevanC
+## `RelevanC`
 
 ```{r}
 knitr::include_graphics("images/schema-structure.drawio.png")
 ```
+
+
+---
+#  Données
+
+## `OpenFoodFacts` (![openfoodfacts.org](https://fr.openfoodfacts.org))
+
+* Base de données contributive et open-source (alternative à \texttt{Yuka})
+    + Actualisée en continu
+    +  Mise à disposition de csv de manière quotidienne
+    +  Plusieurs API
+* $\approx$ 2 millions de produits
+
+--
+* Beaucoup d'infos disponibles
+    + Scores de qualité agrégés : nutriscore, score NOVA, écoscore
+    + Infos nutritionnelles: calories, glucides, lipides, etc.
+    + Infos sur produit: packaging, etc.
+    
+--
+* _Challenge_:  qualité et taux de complétude variable
+    + Valeurs manquantes
+    + Erreurs de remplissage et fautes d'ortographe
+
+
+---
+#  Données
+
+## `CIQUAL` (![ciqual.anses.fr](https://ciqual.anses.fr/))
+
+* Base de données élaborée par l'Anses
+    + Produits standardisées
+    + Beaucoup d'infos disponibles
+    + _Challenge_:  meilleure qualité mais produits standardisés
+
+--
+* Perte d'une dimension dans l'hétérogénéité produit
+    + Globalement même information qu'`OpenFoodFacts`
+
+--
+* Besoin d'enrichir certaines classes de produits:
+    + Faible variabilité nutritionnelle
+    + Forte hétérogénéité des labels des sous-classes: marques, domaines, goûts...
+
+---
+#  Données
+
+## Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
+
+```{r}
+knitr::include_graphics('images/wikipedia.pdf')
+```
+
+
+---
+# Modèle `fasttext` COICOP
+
+<br><br>
+* Réutilisation d'un output du projet `PAul-EAN`:
+    + modèle de prédiction de la classe COICOP
+    + entrainé sur _l'ensemble_ des données de caisse à deux niveaux:
+<br><br>
+
+--
+* COICOP prédite servira de variable de blocage
+<br><br>
+* Création d'une _distance_ ad-hoc entre libellés:
+    + via un plongement de mots (`word embedding`)
+    + initialisé sur le plongement de mots issu de ce modèle 
+
+
+---
+# Appariement produits: vue globale
+
+```{r}
+knitr::include_graphics('images/macro.png')
+```
+
+
+---
+# Data cleaning et catégorisation
+
+```{r}
+knitr::include_graphics('images/macro-ombre2.png')
+```
+
+---
+# Enjeu du data cleaning
+
+* Réduire le bruit dans les données ;
+* Harmoniser les jeux de données ;
+* Détecter des produits non alimentaires malgré filtre rayons.
+
+```{r, fig.show="hold", out.width="48%"}
+knitr::include_graphics('images/openfood_start.png')
+knitr::include_graphics('images/relevanc_start.png')
+```
+
+---
+# Pipeline de data-cleaning
+
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation.drawio.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Premières étapes: définir le champ le plus précis et cohérent possible
+
+1. Consolidation des bases des différentes chaînes
+2. Elimine des produits non alimentaires (`RelevanC` et `OpenFood`)
+3. Retire des abbréviations qui apportent du bruit
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part1.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Premières étapes: définir le champ le plus précis et cohérent possible
+
+3. Identification par expression régulière d'infos sur le produit
+    + Remplacement par des mots-clés (`#VOLUME`, `#POIDS`, `#UNITE`, `#LOT`...) pour la classification
+    + Suppression de ces infos pour le libellé d'appariement flou
+
+```{python, eval = FALSE, echo = TRUE}
+r'\d+\.?\d*\s?(K?G(R|E)?(X\d+)?)\b': '{}'.format(weigt_exp),
+r'\d+\.?\d*\s?([CM]?L)\b': '{}'.format(vol_exp),
+r'\d+\s?(X|\*)\s?\d*\b': '{}'.format(lot_exp),
+```
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+4. Transformation en suite d'unités signifiantes (`token`)
+    + Retrait des _stopwords_ qui n'apportent pas d'info sur le produit 
+    + Mots comme _token_
+    + `nltk` plutôt que `spaCy`
+    + Pas de `stemming`
+    + Les n-grams sont définis au niveau de la requête `Elastic`
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
+```
+
+
+---
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+
+* Réduire le bruit dans les données ;
+* Harmoniser les jeux de données ;
+* Détecter des produits non alimentaires malgré filtre rayons.
+
+```{r, fig.show="hold", out.width="50%"}
+knitr::include_graphics('images/openfood_tokenized.png')
+knitr::include_graphics('images/relevanc_tokenized.png')
+```
+
+---
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+|                 Libellé d'origine |          Libellé tokenisé |             Libellé classification  |
+|-----------------------------------|---------------------------|-------------------------------------|
+|                  NUTELLA POT 225G |               nutella pot |                 NUTELLA POT #POIDS  |
+|          PULCO DELICE AGRUME 70CL |       pulco delice agrume |        PULCO DELICE AGRUME #VOLUME  |
+|Cristaline Eau de source - 1,5 l & |   cristaline eau source & | CRISTALINE EAU DE SOURCE #VOLUME    |
+|             COCA COLA CANETTE 1KG |         coca cola canette |           COCA COLA CANETTE #POIDS  |
+|           Brioche tranchée nature |   brioche tranchee nature |             BRIOCHE TRANCHEE NATURE |
+|               °RELIGIEUSE CAFE X2 |        degreligieuse cafe |            DEGRELIGIEUSE CAFE #LOT  |
+|1/2 CHEVREAU S/TET S/ABA 2,5KG ENV |      chevreau tet aba env |    12 CHEVREAU STET SABA #POIDS ENV |
+|   SAINT EMILION PUY RAZAC RG 75CL | saint emilion puy razac   | SAINT EMILION PUY RAZAC RG #VOLUME  |
+
+---
+# Classification
+## Classement dans la COICOP
+
+* Chercher un nom de produit proche dans $\approx$ 2 millions est une tâche excessivement complexe...
+    + ... surtout quand on doit le faire 250 000 fois
+    + Equivalent à un produit cartésien de $10^{13}$ opérations (nombre de cellules dans le corps humain)
+
+--
+* Trouver une variable de blocage pour n'associer qu'une partie des paires entre-elles:
+    + Améliore la pertinence de la recherche
+    + Réduit drastiquement la complexité du problème
+
+--
+* Pas de variable commune dans nos différentes sources:
+    + Rayon: faible qualité, pas correspondance 
+* Utilisation COICOP
+
+---
+# Classification
+## Classement dans la COICOP
+
+* Réseau neurone entraîné sur données de caisses
+    + Jamais accès aux données d'entraînement
+
+--
+* Utilisation des poids estimés grâce au binaire `fasttext`
+
+--
+* Classement à un niveau très fin (plus fin que niveau poste)
+    + `01.2.2.1.1`: _Eaux minérales et de source_
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part3.png")
+```
+
+---
+# Classification
+## Exemples
+
+|                  Libellé d'origine |    Libellé tokenisé |             Libellé classification  |
+|------------------------------------|---------------------|-------------------------------------|
+|                  NUTELLA POT 225G  |     01.1.8.3.2.0001 |               Confiseries à base de chocolat |
+|          PULCO DELICE AGRUME 70CL  |     01.2.2.2.1.9999 |                    Boissons rafraîchissantes |
+|             COCA COLA CANETTE 1KG  |     01.2.2.2.1.0005 |                    Boissons rafraîchissantes |
+|  Cristaline Eau de source - 1,5 l  |     01.2.2.1.1.9999 |                  Eaux minérales ou de source |
+|              CITRONS VERTS FILETS  |     01.1.9.4.1.0006 |                        Plats cuisinés n.c.a. |
+|           Brioche tranchée nature  |     01.1.1.3.1.0001 |                                         Pain |
+|               °RELIGIEUSE CAFE X2  |     05.6.1.2.1.9999 | Petits articles pour l'entretien du logement |
+|1/2 CHEVREAU S/TET S/ABA 2,5KG ENV  |     01.1.2.3.1.9999 |                     Mouton, agneau et chèvre |
+|   SAINT EMILION PUY RAZAC RG 75CL  |     02.1.2.1.2.0005 |                              Vins supérieurs |
+
+
+---
+# Appariement
+## Pipeline général
+
+* On recherche dans `OpenFood`/`CIQUAL` un produit des données de caisses
+* Une procédure pour aller de l'appariement le plus certain
+au plus incertain:
+    1. Appariement EAN si disponible dans OpenFood
+    1. Appariement flou dans les produits OpenFood ayant le même code COICOP
+    1. Appariement flou dans tous les produits OpenFood
+    1. Appariement flou dans tous les produits CIQUAL (enrichie avec le dico Wikipedia)
+* Critères de validation conservateurs pour exclure faux positifs
+
+---
+# Appariement
+## Pipeline général
+
+* Code `Python` `r fontawesome::fa("python")` pour gérer ce _pipeline_
+* Package `foodbowl` `r emo::ji('ramen')`
+    + Gère la connexion à `S3` et `Elastic`
+    + Mise en forme des requêtes, récupération des échos...
+    + Validation des *outputs* (distance textuelle et potentiellement réseau de neurone `PyTorch`)
+    + Déploiement sous forme d'API grâce à `fastAPI` (à venir)
+
+---
+# Etape 1
+## Appariement EAN
+
+* EAN est un identifiant produit unique (en principe...)
+* Permet un appariement exact entre `RelevanC` et `OpenFood`
+* Pour la calorie (catégorie la mieux renseignée): permet d'enrichir 46\% des données `RelevanC`
+
+
+
+---
+# Etape 2
+## Objectif du fuzzy matching
+
+```{r}
+knitr::include_graphics("images/elastic-openfood-lasagnas.drawio.png")
+```
+
+---
+# Etape 2
+## Pourquoi ElasticSearch ?
+
+| Approche | Temps de calcul (en secondes) |
+|----------|-----------------|
+|`elastic`    |            0.92 |
+|`rapidfuzz`  |           97.20 |
+|`fuzzywuzzy` |           99.90 |
+
 
 ---
 
@@ -126,34 +423,41 @@ knitr::include_graphics("images/siamese.png")
 ```
 
 ---
-# Qu'est-ce que ça donne?  
+# Qu'est-ce que ça donne? (1/2)
+## Un appariement fondé sur la proximité entre représentation vectorielle des libellés?
 
 ```{r}
 knitr::include_graphics("images/siamese_ex.png")
 ```
 
 
-* Un appariement fondé sur la proximité entre représentation vectorielle des libellés? 
-  + Performant sur les libellés qui se ressemblent (même mot = même plongement)
-  + Des concepts appris, mais sur des produits de grande consommation, pour lesquels on a en général des echos 
-  + Qualité des matchs $\approx$ Pipeline Elastic, mais coûteux à intégrer à la pipeline avec d'autres critères (e.g. glucides non manquantes) de façon aussi flexible que ce que permet Elastic, et parfois difficile d'expliquer la proximité entre libellés qui a été apprise
-* Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic et ajuster la pipeline en fonction des erreurs repérées
+* Performant sur les libellés qui se ressemblent (même mot = même plongement)
+* Des concepts appris, mais sur des produits de grande consommation, pour lesquels on a en général des échos 
+* Qualité des matchs $\approx$ Pipeline Elastic,
+    + mais coûteux à intégrer à la pipeline avec d'autres critères (e.g. glucides non manquantes) de façon aussi flexible que ce que permet Elastic
+    + parfois difficile d'expliquer la proximité entre libellés qui a été apprise
+  
+---
+# Qu'est-ce que ça donne? (2/2)
+  
+* Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic
+* ajuster la pipeline en fonction des erreurs repérées
 
---- 
+---
 # Appariement magasin
 
 ```{r}
 knitr::include_graphics("images/siamese_ex.png")
 ```
 
---- 
+---
 # Appariement magasin
 
 ```{r}
 knitr::include_graphics("images/macro_geoloc.png")
 ```
 
---- 
+---
 # Géolocalisation à partir de la BAN
 
 ```{r}
@@ -161,7 +465,7 @@ knitr::include_graphics("images/addok.png")
 ```
 
 
---- 
+---
 # Géolocalisation par rapprochement à IRI
 
 * Appariement Exact: à partir d'un code interne magasin (par enseigne) disponible dans le répertoire IRI

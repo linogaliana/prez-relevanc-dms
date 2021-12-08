@@ -567,7 +567,7 @@ La proximité de caractère (**proximité syntaxique**) n'implique pas nécessai
 ## Principe
 
 ```{r}
-knitr::include_graphics("images/siamese_erreurs.png")
+knitr::include_graphics("images/elastic-openfood-siamese.drawio.png")
 ```
 
 ---

@@ -37,7 +37,7 @@ knitr::opts_chunk$set(echo = FALSE)
 --
 * Alcott et al. (2019) proposent une décomposition entre effets:
     + d'offre (déserts alimentaires)
-    + de demande (préférences pour la \textit{junk food})
+    + de demande (préférences pour la _junk food_)
 * Commencer par documenter les inégalités de "qualité" de consommation
     + Avant d'essayer de distinguer effets offre et demande
 
@@ -147,7 +147,7 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 ---
 #  Données
 
-## Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
+### Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
 
 ```{r}
 knitr::include_graphics('images/wiki.png')
@@ -160,8 +160,10 @@ knitr::include_graphics('images/wiki.png')
 <br><br>
 * Réutilisation d'un output du projet `PAul-EAN`:
     + modèle de prédiction de la classe COICOP
-    + entrainé sur _l'ensemble_ des données de caisse à deux niveaux:
+    + entrainé sur _l'ensemble_ des données de caisse 
 <br><br>
+
+Pour deux usages :
 
 --
 * COICOP prédite servira de variable de blocage
@@ -517,7 +519,7 @@ __proximité sémantique__.
 | tarte chevre epinar co 	| epinar |
 |  lapin or sous alu 	| oeufs sous alu |
 
-* Test d'un plongement de mots: associer à un libellé un vecteur dans $\mathbb{R}^N$
+* Test d'un plongement de mots: associer à un libellé un vecteur dans $\mathbb{R}^N$ dont la position dans cette espace reflèterait un concept de produit
 * En déduire une distance non exclusivement basée sur la chaîne de charactère
 
 ---
@@ -537,7 +539,8 @@ knitr::include_graphics("images/siamese.png")
 
 ---
 # Qu'est-ce que ça donne? (1/2)
-## Un appariement fondé sur la proximité entre représentation vectorielle des libellés?
+
+Un appariement fondé sur la proximité entre représentation vectorielle des libellés?
 
 ```{r}
 knitr::include_graphics("images/siamese_ex.png")
@@ -555,6 +558,11 @@ knitr::include_graphics("images/siamese_ex.png")
   
 * Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic
 * ajuster la pipeline en fonction des erreurs repérées
+
+Les désaccords au sens de la distance siamoise entre le match Pipeline Elastic et le match Siamois repère les cas problématiques.
+```{r}
+knitr::include_graphics("images/siamese_falseP.png")
+```
 
 ---
 # Bilan de l'appariement produit
@@ -575,6 +583,13 @@ Retrouver figure
 
 ---
 # Appariement magasin
+
+```{r}
+knitr::include_graphics("images/macro_localim.png")
+```
+
+---
+# Appariement magasin: Géolocalisation
 
 ```{r}
 knitr::include_graphics("images/macro_geoloc.png")
@@ -599,17 +614,18 @@ Recherche d'un match à partir de
     $$m_1 > 3 $$ 
 * _Blocage:_ Département; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse, Ville `string` et X,Y `PointGeo`
     $$m_2 > 5 $$ 
-
-    $m_1 = 3 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 2  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) +  | 
-    1.5  \times SimGeo(X,Y) + 0.5  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $ 
+    
     
 
-    $m_2 = 3 \times SimLev(Ville)\times (SimLev(Ville)>0.8) + 2 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 1  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) +  | 
-    1  \times SimGeo(X,Y) + 1  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $
+  $$m_1 = 3 \times SimLev(Adresse,0.6) + 2  \times SimLev(Enseigne,0.9) + 1.5  \times SimGeo(X,Y) $$ 
+  $$+ 0.5  \times SimLev(Denom,0.2)$$
+    
+
+  $$m_2 = 3 \times SimLev(Ville,0.8) + 2 \times SimLev(Adresse,0.6) +1  \times SimLev(Enseigne,0.9) +$$
+    $$1  \times SimGeo(X,Y) + 1  \times SimLev(Denom,0.2) $$
 
 ---
-# Geolocalisation
-## Bilan (1/2)
+# Geolocalisation: Bilan
 
 | Origine des $(x,y)$ | Magasins | Autre $(x,y)$ | Au moins 1 désaccord (>1km) |
 |---------------------|----------|---------------|-----------------------------|
@@ -625,30 +641,29 @@ Recherche d'un match à partir de
 ## Bilan (2/2)
 
                  
-Parmi les magasins géolocalisé en "IRI exact" et en "Addok-Ban", distance entre les deux options (m):
+* Parmi les magasins géolocalisé en "IRI exact" et en "Addok-Ban", distance entre les deux options (m):
 
 | 10% | 50% | 80% | 90% |
 |-----|-----|-----|-----|
 |10 |  130 |  460 | 1150 |
 
 ---
-# Siretisation
+# Appariement Magasin: Siretisation
 
 ```{r}
 knitr::include_graphics("images/macro_siret.png")
 ```
 
-1. Appariement Flou: à l'aide de la librarie python \textit{recordLinkages} ($\approx$ IRI)
-2. Complétée, pour les magasins au plus gros CA (e.g. Géant Casino) par des recherches "à la main" via Elastic
+---
+# Appariement Magasin: Siretisation
+1. Appariement Flou: à l'aide de la librarie python `recordLinkages` ( $\approx$ IRI )
+2. Complétée, pour les magasins au plus gros CA (e.g. Géant Casino) par des recherches ad-hoc via Elastic (via critères additionels, comme l'utilisation du SIREN de l'U.L. "Casino Distribution France")
 
 Recherche d'un match dans
 
-1. SIRUS 47.11, suceptible d'appartenir à l'enseigne Casino
-    + \textit{Blocage:} Code Postal; \textit{Champ comparé et noté:} Nom du magasin, Libellé d'enseigne, Adresse Ban \textit{(string)}, X,Y \textit{(Point géographique)}, \textit{Embedding 3D Nom du magasin + Enseigne} \textit{(Numeric)}
-2. SIRUS 47.11
-    + (CP)
-3. SIRUS 47.11 
-    + (DEP) \textit{Blocage:} Département; \textit{Champ comparé et noté:} Nom du magasin, Libellé d'enseigne, Adresse, Ville \textit{(string)} et X,Y \textit{(Point géographique)} , \textit{Embedding 3D Nom du magasin + Enseigne} \textit{(Numeric)}
+1. SIRUS 47.11, suceptible d'appartenir à l'enseigne Casino dans le même code postal
+2. SIRUS 47.11, dans le même code postal
+3. SIRUS 47.11, dans le même département
 
 ---
 # Siretisation

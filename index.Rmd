@@ -252,3 +252,100 @@ knitr::include_graphics('images/relevanc_tokenized.png')
 |               °RELIGIEUSE CAFE X2 |        degreligieuse cafe |            DEGRELIGIEUSE CAFE #LOT  |
 |1/2 CHEVREAU S/TET S/ABA 2,5KG ENV |      chevreau tet aba env |    12 CHEVREAU STET SABA #POIDS ENV |
 |   SAINT EMILION PUY RAZAC RG 75CL | saint emilion puy razac   | SAINT EMILION PUY RAZAC RG #VOLUME  |
+
+---
+# Classification
+## Classement dans la COICOP
+
+* Chercher un nom de produit proche dans $\approx$ 2 millions est une tâche excessivement complexe...
+* ... surtout quand on doit le faire 250 000 fois
+* Equivalent à un produit cartésien de $10^{13}$ opérations (nombre de cellules dans le corps humain)
+* Trouver une variable de blocage pour n'associer qu'une partie des paires entre-elles:
+    + Améliore la pertinence de la recherche
+    + Réduit drastiquement la complexité du problème
+* Pas de variable commune dans nos différentes sources:
+    + Rayon: faible qualité, pas correspondance 
+* Utilisation COICOP
+
+---
+# Classification
+## Classement dans la COICOP
+
+* Réseau neurone entraîné sur données de caisses
+* Utilisation des poids estimés grâce au binaire \texttt{fasttext}
+* Jamais accès aux données d'entraînement
+* Classement à un niveau très fin (plus fin que niveau poste)
+    + \texttt{01.2.2.1.1}: \textit{Eaux minérales et de source}
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part3.png")
+```
+
+---
+# Classification
+## Exemples
+
+|                 Libellé d'origine |    Libellé tokenisé |             Libellé classification  |
+|-----------------------------------|---------------------|-------------------------------------|
+                  NUTELLA POT 225G  |     01.1.8.3.2.0001 |               Confiseries à base de chocolat |
+          PULCO DELICE AGRUME 70CL  |     01.2.2.2.1.9999 |                    Boissons rafraîchissantes |
+             COCA COLA CANETTE 1KG  |     01.2.2.2.1.0005 |                    Boissons rafraîchissantes |
+  Cristaline Eau de source - 1,5 l  |     01.2.2.1.1.9999 |                  Eaux minérales ou de source |
+              CITRONS VERTS FILETS  |     01.1.9.4.1.0006 |                        Plats cuisinés n.c.a. |
+           Brioche tranchée nature  |     01.1.1.3.1.0001 |                                         Pain |
+               °RELIGIEUSE CAFE X2  |     05.6.1.2.1.9999 | Petits articles pour l'entretien du logement |
+1/2 CHEVREAU S/TET S/ABA 2,5KG ENV  |     01.1.2.3.1.9999 |                     Mouton, agneau et chèvre |
+   SAINT EMILION PUY RAZAC RG 75CL  |     02.1.2.1.2.0005 |                              Vins supérieurs |
+
+
+---
+# Appariement
+## Pipeline général
+
+* On recherche dans OpenFood/CIQUAL un produit des données de caisses
+* Une procédure pour aller de l'appariement le plus certain
+au plus incertain
+    + Appariement EAN si disponible dans OpenFood
+    + Appariement flou dans les produits OpenFood ayant le même code COICOP
+    + Appariement flou dans tous les produits OpenFood
+    + Appariement flou dans tous les produits CIQUAL (enrichie avec le dico Wikipedia)
+* Critères de validation conservateurs pour exclure faux positifs
+
+---
+# Appariement
+## Pipeline général
+
+* Code \texttt{Python} pour gérer ce \textit{pipeline}
+* Package \texttt{foodbowl} %\emoji{ramen} %{\fontspec{Symbola}\symbol{"1F35C}}
+    + Gère la connexion à S3 et Elastic
+    + Mise en forme des requêtes, récupération des échos...
+    + Validation des \textit{outputs} (distance textuelle et potentiellement réseau de neurone \texttt{PyTorch})
+    + Déploiement sous forme d'API grâce à \texttt{fastAPI} (à venir)
+
+---
+# Etape 1
+## Appariement EAN
+
+* EAN est un identifiant produit unique (en principe...)
+* Permet un appariement exact entre \texttt{RelevanC} et \texttt{OpenFood}
+* Pour la calorie (catégorie la mieux renseignée): permet d'enrichir 46\% des données \texttt{RelevanC}
+
+
+
+---
+# Etape 2
+## Objectif du fuzzy matching
+
+```{r}
+knitr::include_graphics("images/elastic-openfood-lasagnas.drawio.png")
+```
+
+---
+# Etape 2
+## Pourquoi ElasticSearch ?
+
+| Approche | Temps de calcul (en secondes) |
+|----------|-----------------|
+|elastic    |            0.92 |
+|rapidfuzz  |           97.20 |
+|fuzzywuzzy |           99.90 |

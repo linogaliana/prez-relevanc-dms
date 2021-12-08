@@ -470,11 +470,11 @@ Recherche d'un match à partir de
 * _Blocage:_ Département; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse, Ville `string` et X,Y `PointGeo`
     $$m_2 > 5 $$ 
 
-    $m_1 = 3 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 2  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) + \\ 
+    $m_1 = 3 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 2  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) +  | 
     1.5  \times SimGeo(X,Y) + 0.5  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $ 
     
 
-    $m_2 = 3 \times SimLev(Ville)\times (SimLev(Ville)>0.8) + 2 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 1  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) + \\ 
+    $m_2 = 3 \times SimLev(Ville)\times (SimLev(Ville)>0.8) + 2 \times SimLev(Adresse)\times (SimLev(Adresse)>0.6) + 1  \times SimLev(Enseigne) \times (SimLev(Enseigne)>0.9) +  | 
     1  \times SimGeo(X,Y) + 1  \times SimLev(Denom)\times(SimLev(Denom)>0.2) $
 
 ---
@@ -524,16 +524,37 @@ Recherche d'un match dans
 # Siretisation
 ## Exemples aléatoires
 
+En blanc la requête, en gris l'écho
+
 | Nom magasin          | Adresse            | Ville           |
 |----------------------|--------------------|------------------|
 | PS ALLIGNY COSNE VIVAL | 18 ROUTE DE BOUHY | ALLIGNY COSNE  | 
+| VIVAL AUX GOURMETS | 18 ROUTE DE BOUHY | 58200 ALLIGNY-COSNE  | 
 | NICE RAOUL BOSIO SPAR | 2 BIS RUE RAOUL BOSIO | NICE  | 
+| SPAR NISACOL | 2 BIS RUE RAOUL BOSIO | 06300 NICE  | 
 | LP BASSENS LEADER PRICE | 23 AV DE LA SOMME | BASSENS  | 
+| LEADER PRICE BASSENS | AVENUE DE LA SOMME | 33530 BASSENS  | 
 | PS DOMENE LE PETIT CASINO | PLACE DE STALINGRAD | DOMENE  | 
+| DISTRIBUTION CASINO FRANCE LE PETIT DE DOMENE | PLACE STALINGRAD | 38420 DOMENE  | 
+
+---
+# Siretisation
+## Exemples aléatoires
+
+En blanc la requête, en gris l'écho
+
+| Nom magasin          | Adresse            | Ville           |
+|----------------------|--------------------|------------------|
 | SEBASTOPOL FRANPRIX | 12-14 RUE SANTEUIL | PARIS  | 
+| SEBASTOPOL DISTRIBUTION | 14 RUE SANTEUIL | 75005 PARIS  | 
 | SM CASINO ST PIERRE SUR DIVES SUPERMARCHE HYPER | ROUTE DE LISIEUX | ST PIERRE SUR DIVES  | 
+| DISTRIBUTION CASINO FRANCE | RUE DE LISIEUX | 14170 SAINT-PIERRE-EN-AUGE  | 
 | POINT RETRAIT SM HARDRICOURT | 60 RUE DU VEXIN | HARDRICOURT  | 
+| DISTRIBUTION CASINO FRANCE | 60 RUE DU VEXIN | 78250 HARDRICOURT  | 
 | ALYE FRANPRIX | RUE HENRI SPAAK | VERNOUILLET  | 
+| NEWDNERA FRANPRIX | RUE PAUL HENRI SPAACK | 28500 VERNOUILLET  | 
 | NEWFPMAG MONTROUGE FRANPRIX | 37 RUE BARBES | MONTROUGE  | 
+| FRANPRIX MONTROUGE MARKET | 37 RUE BARBES | 92120 MONTROUGE  | 
+
 
 

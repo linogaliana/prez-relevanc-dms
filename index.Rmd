@@ -118,7 +118,7 @@ knitr::include_graphics("images/schema-structure.drawio.png")
     + Scores de qualité agrégés : nutriscore, score NOVA, écoscore
     + Infos nutritionnelles: calories, glucides, lipides, etc.
     + Infos sur produit: packaging, etc.
-    
+
 --
 * _Challenge_:  qualité et taux de complétude variable
     + Valeurs manquantes
@@ -150,7 +150,7 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 ## Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
 
 ```{r}
-knitr::include_graphics('images/wikipedia.pdf')
+knitr::include_graphics('images/wiki.png')
 ```
 
 
@@ -359,13 +359,15 @@ au plus incertain:
     + Déploiement sous forme d'API grâce à `fastAPI` (à venir)
 
 ---
-# Etape 1
-## Appariement EAN
+# Etape 1: appariement EAN
 
-* EAN est un identifiant produit unique (en principe...)
-* Permet un appariement exact entre `RelevanC` et `OpenFood`
-* Pour la calorie (catégorie la mieux renseignée): permet d'enrichir 46\% des données `RelevanC`
+* __EAN__ est un identifiant produit unique: appariement exact entre `RelevanC` et `OpenFood`
+* Pour la calorie: permet d'enrichir __46% des données__ `RelevanC`
+* Appariement servira de base d'entraînement pour le réseau siamois
 
+```{r}
+knitr::include_graphics("images/elastic-openfood-step1-ean.drawio.png")
+```
 
 
 ---
@@ -376,19 +378,122 @@ au plus incertain:
 knitr::include_graphics("images/elastic-openfood-lasagnas.drawio.png")
 ```
 
+
 ---
-# Etape 2
-## Pourquoi ElasticSearch ?
+# Etape 2: appariement flou
+## Pourquoi `ElasticSearch` ?
+
+* Liberté dans la recherche:
+    + Mélange critères distances textuelle pure (type Levensthein)
+    + avec d'autres critères (ngrams...)
+--
+
+* Extrêmement performant:
+    + Parallélisation des recherches
+    + Recherches optimisées
+    + Recherches multiples, asynchrones, etc. 
+* _Exemple_: Performance pour apparier et valider 100 produits `RelevanC` : 
 
 | Approche | Temps de calcul (en secondes) |
 |----------|-----------------|
-|`elastic`    |            0.92 |
+|`ElasticSearch`    |            0.92 |
 |`rapidfuzz`  |           97.20 |
 |`fuzzywuzzy` |           99.90 |
 
+---
+# Etape 2: appariement flou
+## `ElasticSearch` comment ?
+
+* *Open-source*, possibilité d'avoir des instances internes (comme sur SSP-Cloud ou instance Kube interne)
+* Livré avec interface graphique `Kibana`:
+    + Pratique pour *monitoring*
+    + Mieux vaut passer par `Python` pour __indexation__ & __requêtage__
+* Package officiel `elasticsearch` pour intégration à `Python`
+    + Repose sur le format JSON (pratique en `Python` !)
 
 ---
+# Etape 2: appariement flou
+## `ElasticSearch` dans notre *pipeline*
 
+```{r}
+knitr::include_graphics("images/elastic-openfood-Page-4.drawio.png")
+```
+
+---
+# Etape 2: appariement flou
+## `ElasticSearch` avec `r fontawesome::fa("python")`
+
+* Connexion simple:
+
+```{python, eval = FALSE, echo = TRUE}
+from elasticsearch import Elasticsearch
+es = Elasticsearch([{'host': HOST, 'port': 9200}], http_compress=True, timeout=200)
+```
+
+--
+* Création d'un *index* à partir d'un `DataFrame` :
+
+```{python, eval = FALSE, echo = TRUE}
+from elasticsearch.helpers import parallel_bulk
+es.indices.create(index=index_name, body=mapping)
+deque(parallel_bulk(client=es, actions=gen_dict_from_pandas(index_name, df), chunk_size=2000, thread_count=4))
+```
+
+--
+* Envoi et récupération de plusieurs requêtes :
+
+```{python, eval = FALSE, echo = TRUE}
+es.msearch(body=req, max_concurrent_searches=1000)
+```
+
+---
+# Etape 2: appariement flou
+## `ElasticSearch` avec `r fontawesome::fa("python")`
+
+Exemple de requête
+
+```{python, eval = FALSE, echo = TRUE}
+{
+  "query": {
+    "bool": {
+      "should": [
+        { "match": { "libel_clean_OFF":  { "query":  "pulco delice agrume" , "boost" : 10}}},
+        { "match": { "libel_clean_OFF.ngr":   "pulco delice agrume" }},
+        { "match": { "libel_clean_OFF.stem":   "pulco delice agrume" }},
+        { "match":  { "prediction.9car": "01.2.2.2.1.9999" }}],
+      "minimum_should_match": 3,
+      "filter": [
+        { "match":  { "prediction.7car": "01.2.2.2.1.9999" }},
+        {"exists" : {
+               "field" : "energy_100g"
+        }}
+      ]
+    }
+  }
+}
+```
+
+---
+# Etape 2: appariement flou
+## `ElasticSearch` avec `r fontawesome::fa("python")`: retour d'expérience
+
+* Pas besoin d'avoir la certification [*Elastic Engineer*](https://www.elastic.co/fr/training/elasticsearch-engineer)
+pour gagner à l'utiliser
+<br>
+
+--
+* Gains de performance importants, même avec une requête sous-optimale
+    + Requêtes asynchrones à creuser
+<br>
+
+--
+* Gain en flexibilité à creuser
+    + Exemple: étape de validation par distance Levensthein avant le renvoi d'écho
+    serait plus performant
+<br>
+
+
+---
 # Critère de validation
 
 
@@ -401,10 +506,10 @@ knitr::include_graphics("images/partial_ratio.png")
 ```
 
 ---
-
 # Une distance adaptée à notre problème?
 
-La proximité de caractère n'implique pas nécessairement une proximité sémantique.
+La proximité de caractère (__proximité syntaxique__) n'implique pas nécessairement une
+__proximité sémantique__.
 
 | Libellé d'origine | Libellé du match |
 | --- | --- | 
@@ -414,6 +519,14 @@ La proximité de caractère n'implique pas nécessairement une proximité séman
 
 * Test d'un plongement de mots: associer à un libellé un vecteur dans $\mathbb{R}^N$
 * En déduire une distance non exclusivement basée sur la chaîne de charactère
+
+---
+# Réseaux siamois 
+## Principe
+
+```{r}
+knitr::include_graphics("images/elastic-openfood-siamese.drawio.png")
+```
 
 ---
 # Réseaux siamois 
@@ -442,6 +555,23 @@ knitr::include_graphics("images/siamese_ex.png")
   
 * Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic
 * ajuster la pipeline en fonction des erreurs repérées
+
+---
+# Bilan de l'appariement produit
+## Taux d'appariements globaux
+
+* Le matching openfood avec Elastic permet d'enrichir $\approx$ 40% de nos produits
+* Calories: XXX% des produits enrichis (XXX% du CA)
+
+```{r}
+knitr::include_graphics("images/share_imputed_products.png")
+```
+
+---
+# Bilan de l'appariement produit
+## Distribution des distances textuelles
+
+Retrouver figure
 
 ---
 # Appariement magasin
@@ -479,7 +609,7 @@ Recherche d'un match à partir de
 
 ---
 # Geolocalisation
-# Bilan (1/2)
+## Bilan (1/2)
 
 | Origine des $(x,y)$ | Magasins | Autre $(x,y)$ | Au moins 1 désaccord (>1km) |
 |---------------------|----------|---------------|-----------------------------|
@@ -492,7 +622,7 @@ Recherche d'un match à partir de
 
 ---
 # Geolocalisation
-# Bilan (2/2)
+## Bilan (2/2)
 
                  
 Parmi les magasins géolocalisé en "IRI exact" et en "Addok-Ban", distance entre les deux options (m):

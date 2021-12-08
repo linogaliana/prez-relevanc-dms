@@ -28,12 +28,16 @@ knitr::opts_chunk$set(echo = FALSE)
 * Alimentation affecte variables de santé publique ayant un effet de premier ordre sur bien-être :
     + obésité
     + mortalité différentielle
-* Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
+
+--
+* Facteurs sociaux et territoriaux interagissent
+    + Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
+    + Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
+
+--
 * Alcott et al. (2019) proposent une décomposition entre effets:
     + d'offre (déserts alimentaires)
     + de demande (préférences pour la \textit{junk food})
-* Facteurs sociaux et territoriaux interagissent
-* Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
 * Commencer par documenter les inégalités de "qualité" de consommation
     + Avant d'essayer de distinguer effets offre et demande
 
@@ -43,10 +47,12 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Problématique (2/2)
 
-* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de "qualité"
+* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de *"qualité"*
     + Low-cost vs autres produits
     + Bio vs agriculture traditionnelle
 * Besoin de données très fines pour distinguer les qualités nutritionnelles (Caillavet et al. 2020)
+
+--
 * D'où l'utilisation de sources de collectes automatisées:
     + Données d'enquête (notamment Budget des Familles) serviront à vérifier la cohérence voire caler
     + Autres sources administratives pour contrôler la qualité des données
@@ -59,23 +65,28 @@ knitr::opts_chunk$set(echo = FALSE)
 * Besoin d'enrichissements multiples:
     + Sur la dimension géographiques
     + Sur la dimension produit
+
+--
 * Méthode des appariements flous 
     + Compenser absence d'identifiants pour appariements exacts
     + Noms produits
     + Adresse magasins
+
+--
 * Catégorisation pour réduire le nombre de paires
     + COICOP
     + Département
-* Approche généralisable à de nombreux problèmes de la stat publique
+
+Approche généralisable à de nombreux problèmes de la stat publique
 
 
 ---
 #  Données
 
-## RelevanC
+## `RelevanC`
 
 * Données de caisses du groupe Casino
-    + Casino, Monoprix, Franprix au niveau magasin et 
+    + Casino, Monoprix, Franprix au niveau magasin et cartes fidélité 
     + Leader Price et des petites chaînes (stations services, Sherpa...) au niveau magasin exclusivement
 * $\approx$ 11 000 magasins
 * $\approx$ 250 000 produits
@@ -84,7 +95,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ---
 #  Données
 
-## RelevanC
+## `RelevanC`
 
 ```{r}
 knitr::include_graphics("images/schema-structure.drawio.png")
@@ -94,18 +105,22 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 ---
 #  Données
 
-## OpenFoodFacts (![openfoodfacts.org](https://fr.openfoodfacts.org))
+## `OpenFoodFacts` (![openfoodfacts.org](https://fr.openfoodfacts.org))
 
 * Base de données contributive et open-source (alternative à \texttt{Yuka})
     + Actualisée en continu
     +  Mise à disposition de csv de manière quotidienne
     +  Plusieurs API
 * $\approx$ 2 millions de produits
+
+--
 * Beaucoup d'infos disponibles
     + Scores de qualité agrégés : nutriscore, score NOVA, écoscore
     + Infos nutritionnelles: calories, glucides, lipides, etc.
     + Infos sur produit: packaging, etc.
-* \textit{Challenge}:  qualité et taux de complétude variable
+    
+--
+* _Challenge_:  qualité et taux de complétude variable
     + Valeurs manquantes
     + Erreurs de remplissage et fautes d'ortographe
 
@@ -113,14 +128,18 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 ---
 #  Données
 
-## CIQUAL (![ciqual.anses.fr](https://ciqual.anses.fr/))
+## `CIQUAL` (![ciqual.anses.fr](https://ciqual.anses.fr/))
 
 * Base de données élaborée par l'Anses
     + Produits standardisées
     + Beaucoup d'infos disponibles
-    + \textit{Challenge}:  meilleure qualité mais produits standardisés
+    + _Challenge_:  meilleure qualité mais produits standardisés
+
+--
 * Perte d'une dimension dans l'hétérogénéité produit
-    + Globalement même information qu'\texttt{OpenFoodFacts}
+    + Globalement même information qu'`OpenFoodFacts`
+
+--
 * Besoin d'enrichir certaines classes de produits:
     + Faible variabilité nutritionnelle
     + Forte hétérogénéité des labels des sous-classes: marques, domaines, goûts...
@@ -138,10 +157,18 @@ knitr::include_graphics('images/wikipedia.pdf')
 ---
 # Modèle `fasttext` COICOP
 
-Réutilisation d'un output du projet \texttt{PAul-EAN}: modèle de prédiction de la classe COICOP entrainé sur \textit{l'ensemble} des données de caisse à deux niveaux:
+<br><br>
+* Réutilisation d'un output du projet `PAul-EAN`:
+    + modèle de prédiction de la classe COICOP
+    + entrainé sur _l'ensemble_ des données de caisse à deux niveaux:
+<br><br>
 
-* COICOP prédite comme variable de blocage
-* Création d'une \textit{distance} ad-hoc entre libellés via un plongement de mots, qui est initialisé sur le plongement de mots issu de ce modèle 
+--
+* COICOP prédite servira de variable de blocage
+<br><br>
+* Création d'une _distance_ ad-hoc entre libellés:
+    + via un plongement de mots (`word embedding`)
+    + initialisé sur le plongement de mots issu de ce modèle 
 
 
 ---
@@ -166,7 +193,7 @@ knitr::include_graphics('images/macro-ombre2.png')
 * Harmoniser les jeux de données ;
 * Détecter des produits non alimentaires malgré filtre rayons.
 
-```{r, fig.show="hold", out.width="50%"}
+```{r, fig.show="hold", out.width="48%"}
 knitr::include_graphics('images/openfood_start.png')
 knitr::include_graphics('images/relevanc_start.png')
 ```
@@ -184,7 +211,7 @@ knitr::include_graphics("images/step2-cleaning-categorisation.drawio.png")
 ## Premières étapes: définir le champ le plus précis et cohérent possible
 
 1. Consolidation des bases des différentes chaînes
-2. Elimine des produits non alimentaires (\texttt{RelevanC} et \texttt{OpenFood})
+2. Elimine des produits non alimentaires (`RelevanC` et `OpenFood`)
 3. Retire des abbréviations qui apportent du bruit
 
 ```{r}
@@ -196,7 +223,7 @@ knitr::include_graphics("images/step2-cleaning-categorisation-part1.png")
 ## Premières étapes: définir le champ le plus précis et cohérent possible
 
 3. Identification par expression régulière d'infos sur le produit
-    + Remplacement par des mots-clés (\texttt{#VOLUME}, \texttt{#POIDS}, \texttt{#UNITE}, \texttt{#LOT}...) pour la classification
+    + Remplacement par des mots-clés (`#VOLUME`, `#POIDS`, `#UNITE`, `#LOT`...) pour la classification
     + Suppression de ces infos pour le libellé d'appariement flou
 
 ```{python, eval = FALSE, echo = TRUE}

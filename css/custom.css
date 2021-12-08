@@ -335,3 +335,9 @@ img[class = "lol"] {
 pre {
   margin: 0.5em 0;
 }
+
+strong {
+  font-weight: bold;
+  color: #1A292C;
+}
+

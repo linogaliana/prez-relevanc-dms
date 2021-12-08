@@ -49,7 +49,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 <br><br>
 
-* Au sein d'une classe de produit (ex: lasagnes), énormément d'__hétérogénéité__ de *"qualité"*
+* Au sein d'une classe de produit (ex: lasagnes), énormément d'**hétérogénéité** de *"qualité"*
     + Low-cost vs autres produits
     + Bio vs agriculture traditionnelle
 
@@ -67,18 +67,18 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Enjeux
 
-* Besoin d'__enrichissements multiples__:
+* Besoin d'**enrichissements multiples**:
     + Sur la dimension `géographique` ;
     + Sur la dimension `produit`
 
 --
-* Méthode des __appariements flous__: 
+* Méthode des **appariements flous**: 
     + Compenser absence d'identifiants pour appariements exacts
     + Noms produits
     + Adresse magasins
 
 --
-* __Catégorisation__ pour réduire le nombre de paires
+* **Catégorisation** pour réduire le nombre de paires
     + COICOP
     + Département
 
@@ -92,8 +92,8 @@ knitr::opts_chunk$set(echo = FALSE)
 ## `RelevanC`
 
 * Données de caisses du groupe Casino
-    + Casino, Monoprix, Franprix au niveau magasin et cartes fidélité 
-    + Leader Price et des petites chaînes (stations services, Sherpa...) au niveau magasin exclusivement
+    + Casino, Monoprix, Franprix au *niveau magasin* et *cartes fidélité*
+    + Leader Price et des petites chaînes (stations services, Sherpa...) au *niveau magasin* exclusivement
 * $\approx$ 11 000 magasins
 * $\approx$ 250 000 produits
 
@@ -110,20 +110,41 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 
 ---
 #  Données
+## Référentiels `IRI`
+
+* Référentiel de __produits__ et de __magasins__ achetés par l'Insee
+    + Mis à jour toutes les semaines
+
+--
+* Une base intéressante pour les **appariements exacts** :
+    + Bon taux d'appariement EAN
+    + Informations utiles: bio, poids du produit...
+
+--
+* Libellés propres:
+    + $\neq$ données de caisses collectées automatiquement
+
+--
+* Exploite pour la **dimension poids**:
+    + Nécessaire de creuser pour d'autres utilisations...
+    + ... appariements flous notamment 
+
+---
+#  Données
 
 ## `OpenFoodFacts` (![openfoodfacts.org](https://fr.openfoodfacts.org))
 
-* Base de données contributive et open-source (alternative à \texttt{Yuka})
-    + Actualisée en continu
-    +  Mise à disposition de csv de manière quotidienne
+* Base de données contributive et open-source (alternative à `Yuka`)
+    + Actualisée en continu ;
+    +  Mise à disposition de csv de manière quotidienne ;
     +  Plusieurs API
-* $\approx$ 2 millions de produits
+* $\approx$ **2 millions de produits**
 
 --
 * Beaucoup d'infos disponibles
-    + Scores de qualité agrégés : nutriscore, score NOVA, écoscore
-    + Infos nutritionnelles: calories, glucides, lipides, etc.
-    + Infos sur produit: packaging, etc.
+    + _Scores de qualité agrégés_ : nutriscore, score NOVA, écoscore
+    + _Infos nutritionnelles_: calories, glucides, lipides, etc.
+    + _Infos sur produit_: packaging, etc.
 
 --
 * _Challenge_:  qualité et taux de complétude variable
@@ -136,14 +157,14 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 
 ## `CIQUAL` (![ciqual.anses.fr](https://ciqual.anses.fr/))
 
-* Base de données élaborée par l'Anses
-    + Produits standardisées
+* Base de données élaborée par l'`Anses`
+    + **Produits standardisées**
     + Beaucoup d'infos disponibles
     + _Challenge_:  meilleure qualité mais produits standardisés
 
 --
-* Perte d'une dimension dans l'hétérogénéité produit
-    + Globalement même information qu'`OpenFoodFacts`
+* Globalement même information qu'`OpenFoodFacts`:
+    + Mais, perte d'une dimension dans l'hétérogénéité produit
 
 --
 * Besoin d'enrichir certaines classes de produits:
@@ -152,8 +173,7 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 
 ---
 #  Données
-
-### Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
+## Dictionnaires de produits via Wikipédia
 
 ```{r}
 knitr::include_graphics('images/wiki.png')
@@ -169,11 +189,10 @@ knitr::include_graphics('images/wiki.png')
     + entrainé sur _l'ensemble_ des données de caisse 
 <br><br>
 
+--
 Pour deux usages :
 
---
 * COICOP prédite servira de variable de blocage
-<br><br>
 * Création d'une _distance_ ad-hoc entre libellés:
     + via un plongement de mots (`word embedding`)
     + initialisé sur le plongement de mots issu de ce modèle 
@@ -201,7 +220,8 @@ knitr::include_graphics('images/macro-ombre2.png')
 * Harmoniser les jeux de données ;
 * Détecter des produits non alimentaires malgré filtre rayons.
 
-```{r, fig.show="hold", out.width="48%"}
+<br><br>
+```{r, fig.show="hold", out.width="48%", fig.cap="Nuage de mot: OpenFood (gauche) et RelevanC (droite)"}
 knitr::include_graphics('images/openfood_start.png')
 knitr::include_graphics('images/relevanc_start.png')
 ```
@@ -252,8 +272,8 @@ knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
     + Retrait des _stopwords_ qui n'apportent pas d'info sur le produit 
     + Mots comme _token_
     + `nltk` plutôt que `spaCy`
-    + Pas de `stemming`
-    + Les n-grams sont définis au niveau de la requête `Elastic`
+    + Pas de `stemming` (défini au niveau de la requête `Elastic`)
+    + Les *n-grams* sont définis au niveau de la requête `Elastic`
 
 ```{r}
 knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
@@ -264,15 +284,16 @@ knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
 # Pipeline de data-cleaning
 ## Deuxième étape: normalisation des noms de produits
 
+<input type="checkbox" checked> Réduire le bruit dans les données ; </input>
+<input type="checkbox" checked> Harmoniser les jeux de données ; </input>
+<input type="checkbox" checked> Détecter des produits non alimentaires malgré filtre rayons. </input>
 
-* Réduire le bruit dans les données ;
-* Harmoniser les jeux de données ;
-* Détecter des produits non alimentaires malgré filtre rayons.
 
-```{r, fig.show="hold", out.width="50%"}
+<br><br>
+```{r, fig.show="hold", out.width="48%", fig.cap="Nuage de mot: OpenFood (gauche) et RelevanC (droite)"}
 knitr::include_graphics('images/openfood_tokenized.png')
 knitr::include_graphics('images/relevanc_tokenized.png')
-```
+``` 
 
 ---
 # Pipeline de data-cleaning
@@ -298,21 +319,21 @@ knitr::include_graphics('images/relevanc_tokenized.png')
     + Equivalent à un produit cartésien de $10^{13}$ opérations (nombre de cellules dans le corps humain)
 
 --
-* Trouver une variable de blocage pour n'associer qu'une partie des paires entre-elles:
+* Trouver une __variable de blocage__ pour n'associer qu'une partie des paires entre-elles:
     + Améliore la pertinence de la recherche
     + Réduit drastiquement la complexité du problème
 
 --
 * Pas de variable commune dans nos différentes sources:
-    + Rayon: faible qualité, pas correspondance 
-* Utilisation COICOP
+    + Rayon: faible qualité, pas correspondance entre sources
+* Utilisation `COICOP`
 
 ---
 # Classification
 ## Classement dans la COICOP
 
-* Réseau neurone entraîné sur données de caisses
-    + Jamais accès aux données d'entraînement
+* __Réseau neurone entraîné sur données de caisses__
+    + Jamais accès aux données d'entraînement !
 
 --
 * Utilisation des poids estimés grâce au binaire `fasttext`
@@ -349,17 +370,17 @@ knitr::include_graphics("images/step2-cleaning-categorisation-part3.png")
 * On recherche dans `OpenFood`/`CIQUAL` un produit des données de caisses
 * Une procédure pour aller de l'appariement le plus certain
 au plus incertain:
-    1. Appariement EAN si disponible dans OpenFood
-    1. Appariement flou dans les produits OpenFood ayant le même code COICOP
-    1. Appariement flou dans tous les produits OpenFood
-    1. Appariement flou dans tous les produits CIQUAL (enrichie avec le dico Wikipedia)
-* Critères de validation conservateurs pour exclure faux positifs
+    1. __Appariement EAN__ si disponible dans `OpenFood`
+    1. __Appariement flou__ dans les produits `OpenFood` ayant le même code `COICOP`
+    1. __Appariement flou__ dans tous les produits `OpenFood`
+    1. __Appariement flou__ dans tous les produits `CIQUAL` (enrichie avec le dico `Wikipedia`)
+* **Critères de validation** conservateurs pour exclure faux positifs
 
 ---
 # Appariement
 ## Pipeline général
 
-* Code `Python` `r fontawesome::fa("python")` pour gérer ce _pipeline_
+* Code `Python` `r fontawesome::fa("python")` pour gérer ce _pipeline_ <br><br>
 * Package `foodbowl` `r emo::ji('ramen')`
     + Gère la connexion à `S3` et `Elastic`
     + Mise en forme des requêtes, récupération des échos...
@@ -369,9 +390,9 @@ au plus incertain:
 ---
 # Etape 1: appariement EAN
 
-* __EAN__ est un identifiant produit unique: appariement exact entre `RelevanC` et `OpenFood`
-* Pour la calorie: permet d'enrichir __46% des données__ `RelevanC`
-* Appariement servira de base d'entraînement pour le réseau siamois
+*  **EAN** est un identifiant produit unique: appariement exact entre `RelevanC` et `OpenFood`
+* Pour la calorie: permet d'enrichir **46% des données** `RelevanC`
+* Appariement servira de **base d'entraînement** pour le réseau siamois
 
 ```{r}
 knitr::include_graphics("images/elastic-openfood-step1-ean.drawio.png")
@@ -391,15 +412,16 @@ knitr::include_graphics("images/elastic-openfood-lasagnas.drawio.png")
 # Etape 2: appariement flou
 ## Pourquoi `ElasticSearch` ?
 
-* Liberté dans la recherche:
-    + Mélange critères distances textuelle pure (type Levensthein)
-    + avec d'autres critères (ngrams...)
+* __Liberté__ dans la recherche:
+    + Mélange critères distances textuelle pure (type Levensthein)...
+    + ... avec d'autres critères (ngrams...)
 --
 
-* Extrêmement performant:
+* Extrêmement __performant__:
     + Parallélisation des recherches
     + Recherches optimisées
     + Recherches multiples, asynchrones, etc. 
+    
 * _Exemple_: Performance pour apparier et valider 100 produits `RelevanC` : 
 
 | Approche | Temps de calcul (en secondes) |
@@ -412,10 +434,12 @@ knitr::include_graphics("images/elastic-openfood-lasagnas.drawio.png")
 # Etape 2: appariement flou
 ## `ElasticSearch` comment ?
 
-* *Open-source*, possibilité d'avoir des instances internes (comme sur SSP-Cloud ou instance Kube interne)
+* *Open-source*, possibilité d'avoir des instances internes
+    + SSP-Cloud
+    + Instance Kube interne
 * Livré avec interface graphique `Kibana`:
     + Pratique pour *monitoring*
-    + Mieux vaut passer par `Python` pour __indexation__ & __requêtage__
+    + Mieux vaut passer par `Python` pour **indexation** & **requêtage**
 * Package officiel `elasticsearch` pour intégration à `Python`
     + Repose sur le format JSON (pratique en `Python` !)
 
@@ -502,12 +526,13 @@ pour gagner à l'utiliser
 
 
 ---
-# Critère de validation
+# Etape 2: critère de validation
 
-
-* `rapidfuzz.fuzz.partial_ratio(s1, s2)`: meilleure similarité entre la chaîne de caractère la plus courte `s1`, de longueur `n` et les `n`-grammes de  `s2`
+* `rapidfuzz.fuzz.partial_ratio(s1, s2)`: meilleure similarité entre
+    + la chaîne de caractère la plus courte `s1`, de longueur `n`
+    + les `n`-grammes de  `s2` `r emo::ji("exploding_head")`
 * Similarité : distance de Levenshtein (y compris transposition) normalisée par la longueur `n`
-*  `partial_ratio(s1, s2) > 0.65`
+*  Critère conservateur: valide paire si `partial_ratio(s1, s2) > 0.65`
 
 ```{r}
 knitr::include_graphics("images/partial_ratio.png")
@@ -516,16 +541,21 @@ knitr::include_graphics("images/partial_ratio.png")
 ---
 # Une distance adaptée à notre problème?
 
-La proximité de caractère (__proximité syntaxique__) n'implique pas nécessairement une
-__proximité sémantique__.
+La proximité de caractère (**proximité syntaxique**) n'implique pas nécessairement une
+**proximité sémantique**.
+<br><br>
 
 | Libellé d'origine | Libellé du match |
 | --- | --- | 
 | oe poulet blanc fermier | poulet blanc fermier |
 | tarte chevre epinar co 	| epinar |
 |  lapin or sous alu 	| oeufs sous alu |
+<br><br>
 
-* Test d'un plongement de mots: associer à un libellé un vecteur dans $\mathbb{R}^N$ dont la position dans cette espace reflèterait un concept de produit
+--
+* Test d'un plongement de mots (`word embedding`):
+    + associer à un libellé un vecteur dans $\mathbb{R}^N$
+    + dont la position dans cette espace reflèterait un concept de produit
 * En déduire une distance non exclusivement basée sur la chaîne de charactère
 
 ---
@@ -562,11 +592,10 @@ knitr::include_graphics("images/siamese_ex.png")
 ---
 # Qu'est-ce que ça donne? (2/2)
   
-* Finalement, utilisation en complément pour repérer les faux positifs de la Pipeline Elastic
+* Finalement, **utilisation en complément** pour **repérer les faux positifs** de la Pipeline Elastic
 * ajuster la pipeline en fonction des erreurs repérées
 
-Les désaccords au sens de la distance siamoise entre le match Pipeline Elastic et le match Siamois repère les cas problématiques.
-```{r}
+```{r, fig.cap = 'Les désaccords au sens de la distance siamoise entre le match Pipeline Elastic et le match Siamois repère les cas problématiques.', fig.topcaption=TRUE}
 knitr::include_graphics("images/siamese_falseP.png")
 ```
 
@@ -574,7 +603,8 @@ knitr::include_graphics("images/siamese_falseP.png")
 # Bilan de l'appariement produit
 ## Taux d'appariements globaux
 
-* Le matching openfood avec Elastic permet d'enrichir $\approx$ 40% de nos produits
+* Le matching `OpenFood` avec Elastic permet d'enrichir $\approx$ 40% de nos produits
+    + Le matching `CIQUAL` permet ensuite de rattraper $\approx$ 5% de nos produits
 * Calories: XXX% des produits enrichis (XXX% du CA)
 
 ```{r}
@@ -610,18 +640,19 @@ knitr::include_graphics("images/addok.png")
 
 
 ---
-# Géolocalisation par rapprochement à IRI
+# Géolocalisation
+## Rapprochement au référentiel `IRI`
 
-* Appariement Exact: à partir d'un code interne magasin (par enseigne) disponible dans le répertoire IRI
-* Appariement Flou: à l'aide de la librarie python `recordLinkages`
+* __Appariement Exact__: à partir d'un code interne magasin (par enseigne) disponible dans le répertoire IRI
+* __Appariement Flou__: à l'aide de la librarie python `recordLinkages`
+<br><br>
 
-Recherche d'un match à partir de 
-* _Blocage:_ Code Postal; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse `string` et X,Y `PointGeo`. 
+* Recherche d'un match à partir de 
+    + _Blocage:_ Code Postal; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse `string` et X,Y `PointGeo`. 
     $$m_1 > 3 $$ 
-* _Blocage:_ Département; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse, Ville `string` et X,Y `PointGeo`
+    + _Blocage:_ Département; _Champ comparé et noté:_ Nom du magasin, Libellé d'enseigne, Adresse, Ville `string` et X,Y `PointGeo`
     $$m_2 > 5 $$ 
-    
-    
+  
 
   $$m_1 = 3 \times SimLev(Adresse,0.6) + 2  \times SimLev(Enseigne,0.9) + 1.5  \times SimGeo(X,Y) $$ 
   $$+ 0.5  \times SimLev(Denom,0.2)$$
@@ -647,7 +678,7 @@ Recherche d'un match à partir de
 ## Bilan (2/2)
 
                  
-* Parmi les magasins géolocalisé en "IRI exact" et en "Addok-Ban", distance entre les deux options (m):
+* Parmi les magasins géolocalisé en *"IRI exact"* et en *"Addok-Ban"*, distance entre les deux options (en mètres):
 
 | 10% | 50% | 80% | 90% |
 |-----|-----|-----|-----|
@@ -661,15 +692,18 @@ knitr::include_graphics("images/macro_siret.png")
 ```
 
 ---
-# Appariement Magasin: Siretisation
-1. Appariement Flou: à l'aide de la librarie python `recordLinkages` ( $\approx$ IRI )
-2. Complétée, pour les magasins au plus gros CA (e.g. Géant Casino) par des recherches ad-hoc via Elastic (via critères additionels, comme l'utilisation du SIREN de l'U.L. "Casino Distribution France")
+# Appariement Magasin
+## Siretisation
 
-Recherche d'un match dans
+1. __Appariement Flou__: à l'aide de la librarie python `recordLinkages` ( $\approx$ IRI )
+2. Complétée, pour les magasins au plus gros CA (e.g. Géant Casino) :
+    + recherches ad-hoc via Elastic via critères additionels...
+    + ... comme l'utilisation du SIREN de l'U.L. *"Casino Distribution France"*
 
-1. SIRUS 47.11, suceptible d'appartenir à l'enseigne Casino dans le même code postal
-2. SIRUS 47.11, dans le même code postal
-3. SIRUS 47.11, dans le même département
+* Recherche d'un match dans:
+  1. `SIRUS` 47.11, suceptible d'appartenir à l'enseigne Casino dans le même code postal
+  2. `SIRUS` 47.11, dans le même code postal
+  3. `SIRUS` 47.11, dans le même département
 
 ---
 # Siretisation
@@ -708,4 +742,7 @@ En blanc la requête, en gris l'écho
 | FRANPRIX MONTROUGE MARKET | 37 RUE BARBES | 92120 MONTROUGE  | 
 
 
+--
+# Conclusion
 
+TO BE COMPLETED

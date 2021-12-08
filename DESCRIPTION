@@ -20,6 +20,7 @@ Imports:
     xaringan,
     fontawesome,
     remotes,
+    reticulate,
     here
 Remotes:
     hadley/emo

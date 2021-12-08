@@ -25,12 +25,12 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Problématique (1/2)
 
-* Alimentation affecte variables de santé publique ayant un effet de premier ordre sur bien-être :
+* Alimentation affecte variables de **santé publique** ayant un effet de premier ordre sur bien-être :
     + obésité
     + mortalité différentielle
 
 --
-* Facteurs sociaux et territoriaux interagissent
+* **Facteurs sociaux** et **territoriaux** interagissent
     + Interaction avec les inégalités socioéconomiques: Caillavet et al. (2020)
     + Malgré réglementations (ex: nutriscore), beaucoup d'asymétries d'information
 
@@ -38,7 +38,7 @@ knitr::opts_chunk$set(echo = FALSE)
 * Alcott et al. (2019) proposent une décomposition entre effets:
     + d'offre (déserts alimentaires)
     + de demande (préférences pour la _junk food_)
-* Commencer par documenter les inégalités de "qualité" de consommation
+* Commencer par documenter les inégalités de *"qualité"* de consommation
     + Avant d'essayer de distinguer effets offre et demande
 
 
@@ -47,13 +47,18 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Problématique (2/2)
 
-* Au sein d'une classe de produit (ex: lasagnes), énormément d'hétérogénéité de *"qualité"*
+<br><br>
+
+* Au sein d'une classe de produit (ex: lasagnes), énormément d'__hétérogénéité__ de *"qualité"*
     + Low-cost vs autres produits
     + Bio vs agriculture traditionnelle
-* Besoin de données très fines pour distinguer les qualités nutritionnelles (Caillavet et al. 2020)
 
 --
-* D'où l'utilisation de sources de collectes automatisées:
+* Besoin de **données très fines** pour distinguer les qualités nutritionnelles (Caillavet et al. 2020)
+
+
+--
+* D'où l'utilisation de **sources de collectes automatisées**:
     + Données d'enquête (notamment Budget des Familles) serviront à vérifier la cohérence voire caler
     + Autres sources administratives pour contrôler la qualité des données
 
@@ -62,22 +67,23 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Enjeux
 
-* Besoin d'enrichissements multiples:
-    + Sur la dimension géographiques
-    + Sur la dimension produit
+* Besoin d'__enrichissements multiples__:
+    + Sur la dimension `géographique` ;
+    + Sur la dimension `produit`
 
 --
-* Méthode des appariements flous 
+* Méthode des __appariements flous__: 
     + Compenser absence d'identifiants pour appariements exacts
     + Noms produits
     + Adresse magasins
 
 --
-* Catégorisation pour réduire le nombre de paires
+* __Catégorisation__ pour réduire le nombre de paires
     + COICOP
     + Département
 
-Approche généralisable à de nombreux problèmes de la stat publique
+<br><br>
+**Approche généralisable à de nombreux problèmes de la statistique publique**
 
 
 ---

@@ -128,6 +128,10 @@ knitr::include_graphics("images/schema-structure.drawio.png")
 * Exploite pour la **dimension poids**:
     + Nécessaire de creuser pour d'autres utilisations...
     + ... appariements flous notamment 
+--
+* Référentiel des points de ventes IRI :
+    + Enseignes 
+    + Coordonnées géographiques
 
 ---
 #  Données

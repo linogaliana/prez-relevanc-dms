@@ -89,3 +89,166 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r}
 knitr::include_graphics("images/schema-structure.drawio.png")
 ```
+
+
+---
+#  Données
+
+## OpenFoodFacts (![openfoodfacts.org](https://fr.openfoodfacts.org))
+
+* Base de données contributive et open-source (alternative à \texttt{Yuka})
+    + Actualisée en continu
+    +  Mise à disposition de csv de manière quotidienne
+    +  Plusieurs API
+* $\approx$ 2 millions de produits
+* Beaucoup d'infos disponibles
+    + Scores de qualité agrégés : nutriscore, score NOVA, écoscore
+    + Infos nutritionnelles: calories, glucides, lipides, etc.
+    + Infos sur produit: packaging, etc.
+* \textit{Challenge}:  qualité et taux de complétude variable
+    + Valeurs manquantes
+    + Erreurs de remplissage et fautes d'ortographe
+
+
+---
+#  Données
+
+## CIQUAL (![ciqual.anses.fr](https://ciqual.anses.fr/))
+
+* Base de données élaborée par l'Anses
+    + Produits standardisées
+    + Beaucoup d'infos disponibles
+    + \textit{Challenge}:  meilleure qualité mais produits standardisés
+* Perte d'une dimension dans l'hétérogénéité produit
+    + Globalement même information qu'\texttt{OpenFoodFacts}
+* Besoin d'enrichir certaines classes de produits:
+    + Faible variabilité nutritionnelle
+    + Forte hétérogénéité des labels des sous-classes: marques, domaines, goûts...
+
+---
+#  Données
+
+## Dictionnaires de produits via Wikipédia (![mediawiki.org](https://www.mediawiki.org/wiki/API))
+
+```{r}
+knitr::include_graphics('images/wikipedia.pdf')
+```
+
+
+---
+# Modèle `fasttext` COICOP
+
+Réutilisation d'un output du projet \texttt{PAul-EAN}: modèle de prédiction de la classe COICOP entrainé sur \textit{l'ensemble} des données de caisse à deux niveaux:
+
+* COICOP prédite comme variable de blocage
+* Création d'une \textit{distance} ad-hoc entre libellés via un plongement de mots, qui est initialisé sur le plongement de mots issu de ce modèle 
+
+
+---
+# Appariement produits: vue globale
+
+```{r}
+knitr::include_graphics('images/macro.png')
+```
+
+
+---
+# Data cleaning et catégorisation
+
+```{r}
+knitr::include_graphics('images/macro-ombre2.png')
+```
+
+---
+# Enjeu du data cleaning
+
+* Réduire le bruit dans les données ;
+* Harmoniser les jeux de données ;
+* Détecter des produits non alimentaires malgré filtre rayons.
+
+```{r, fig.show="hold", out.width="50%"}
+knitr::include_graphics('images/openfood_start.png')
+knitr::include_graphics('images/relevanc_start.png')
+```
+
+---
+# Pipeline de data-cleaning
+
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation.drawio.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Premières étapes: définir le champ le plus précis et cohérent possible
+
+1. Consolidation des bases des différentes chaînes
+2. Elimine des produits non alimentaires (\texttt{RelevanC} et \texttt{OpenFood})
+3. Retire des abbréviations qui apportent du bruit
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part1.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Premières étapes: définir le champ le plus précis et cohérent possible
+
+3. Identification par expression régulière d'infos sur le produit
+    + Remplacement par des mots-clés (\texttt{#VOLUME}, \texttt{#POIDS}, \texttt{#UNITE}, \texttt{#LOT}...) pour la classification
+    + Suppression de ces infos pour le libellé d'appariement flou
+
+```{python, eval = FALSE, echo = TRUE}
+r'\d+\.?\d*\s?(K?G(R|E)?(X\d+)?)\b': '{}'.format(weigt_exp),
+r'\d+\.?\d*\s?([CM]?L)\b': '{}'.format(vol_exp),
+r'\d+\s?(X|\*)\s?\d*\b': '{}'.format(lot_exp),
+```
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
+```
+
+---
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+4. Transformation en suite d'unités signifiantes (\textit{token})
+    + Retrait des \textit{stopwords} qui n'apporte pas d'info sur le produit 
+    + Mots comme token
+    + \texttt{nltk} plutôt que \texttt{spaCy}
+    + Pas de \textit{stemming}
+    + Les n-grams sont définis au niveau de la requête \texttt{Elastic}
+
+```{r}
+knitr::include_graphics("images/step2-cleaning-categorisation-part2.png")
+```
+
+
+---
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+
+* Réduire le bruit dans les données ;
+* Harmoniser les jeux de données ;
+* Détecter des produits non alimentaires malgré filtre rayons.
+
+```{r, fig.show="hold", out.width="50%"}
+knitr::include_graphics('images/openfood_tokenized.png')
+knitr::include_graphics('images/relevanc_tokenized.png')
+```
+
+# Pipeline de data-cleaning
+## Deuxième étape: normalisation des noms de produits
+
+|                 Libellé d'origine |          Libellé tokenisé |             Libellé classification  |
+|-----------------------------------|---------------------------|-------------------------------------|
+|                  NUTELLA POT 225G |               nutella pot |                 NUTELLA POT #POIDS  |
+|          PULCO DELICE AGRUME 70CL |       pulco delice agrume |        PULCO DELICE AGRUME #VOLUME  |
+|Cristaline Eau de source - 1,5 l & |   cristaline eau source & | CRISTALINE EAU DE SOURCE #VOLUME    |
+|             COCA COLA CANETTE 1KG |         coca cola canette |           COCA COLA CANETTE #POIDS  |
+|           Brioche tranchée nature |   brioche tranchee nature |             BRIOCHE TRANCHEE NATURE |
+|               °RELIGIEUSE CAFE X2 |        degreligieuse cafe |            DEGRELIGIEUSE CAFE #LOT  |
+|1/2 CHEVREAU S/TET S/ABA 2,5KG ENV |      chevreau tet aba env |    12 CHEVREAU STET SABA #POIDS ENV |
+|   SAINT EMILION PUY RAZAC RG 75CL | saint emilion puy razac   | SAINT EMILION PUY RAZAC RG #VOLUME  |

@@ -119,10 +119,6 @@ knitr::include_graphics("https://linogaliana-teaching.netlify.app/home/word_hu0f
 
 **Mise à disposition tutoriels et exercices facilitée**:
 
-```{r, echo = FALSE}
-knitr::include_graphics("badges.png")
-```
-
 [Page en question: https://linogaliana-teaching.netlify.app/webscraping/](https://linogaliana-teaching.netlify.app/webscraping/)
 
 ---
@@ -167,9 +163,7 @@ name: r
 - Modules thématiques (modules *"à la carte"*): datavisualisation, RMarkdown, analyse spatiale...
 <br>
 
-```{r, echo = FALSE, fig.align ="center"}
-knitr::include_graphics("mtes.png")
-```
+
 
 ---
 # Ressources `r fontawesome::fa("fab fa-r-project", fill = "white")`: le portail MTES

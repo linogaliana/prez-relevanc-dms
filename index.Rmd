@@ -621,7 +621,7 @@ knitr::include_graphics("images/siamese_falseP.png")
 
 
 ```{r}
-knitr::include_graphics("images/share_imputed_products.png")
+knitr::include_graphics("images/stats_appariement.png")
 ```
 
 ---

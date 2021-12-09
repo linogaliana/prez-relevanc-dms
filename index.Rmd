@@ -566,7 +566,7 @@ La proximité de caractère (**proximité syntaxique**) n'implique pas nécessai
 # Réseaux siamois 
 ## Principe
 
-```{r}
+```{r, out.width = "50%", fig.align="center"}
 knitr::include_graphics("images/elastic-openfood-siamese.drawio.png")
 ```
 

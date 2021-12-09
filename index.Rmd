@@ -609,7 +609,16 @@ knitr::include_graphics("images/siamese_falseP.png")
 
 * Le matching `OpenFood` avec Elastic permet d'enrichir $\approx$ 40% de nos produits
     + Le matching `CIQUAL` permet ensuite de rattraper $\approx$ 5% de nos produits
-* Calories: XXX% des produits enrichis (XXX% du CA)
+* Calories: 98% des produits enrichis (part supérieure en CA)
+
+|   Etape            |   Nombre produits |     Proportion |   Part cumulée |
+|-------------------:|---------:|----------:|-----------:|
+|                  1 |   117 889 | 46.5%  |   46.5% |
+|                  2 |   110 590 | 43.6%  |   90.1% |
+|                  3 |    13 732 | 5.5%  |   95.6% |
+|                  4 |     6924 | 2.7%  |   98.3% |
+|                  Pas imputés |     4167 | 1.7% |   100%        |
+
 
 ```{r}
 knitr::include_graphics("images/share_imputed_products.png")
@@ -617,9 +626,30 @@ knitr::include_graphics("images/share_imputed_products.png")
 
 ---
 # Bilan de l'appariement produit
-## Distribution des distances textuelles
+## Taux d'appariements globaux
 
-Retrouver figure
+* Marche aussi bien pour des caractéristiques autres que la calorie
+
+```{r}
+knitr::include_graphics("images/share_imputed_products.png")
+```
+
+---
+# Bilan de l'appariement produit
+## Exemples aléatoires
+
+|        | LIBELLE                             | libel_clean_relevanc       | energy_100g_libel_clean_OFF                                                                     |   energy_100g |
+|-------:|:------------------------------------|:---------------------------|:------------------------------------------------------------------------------------------------|--------------:|
+| 164915 | NECTARINE BLANCHE BABY              | nectarine blanche baby     | branche blanche                                                                                 |          2389 |
+| 152224 | MELON CJ 1150/1350GR                | melon cj                   | melon                                                                                           |           169 |
+|  30079 | BETTERAVE FRAICHE 375GR             | betterave fraiche          | betterave                                                                                       |           209 |
+| 120809 | IGP OC CINSAULT J.ALIBERT RS 6X75CL | igp oc cinsault alibert rs | rs                                                                                              |          1540 |
+|  65589 | CIBOULETTE SPIGOL BM 12G            | ciboulette spigol bm       | ciboulette                                                                                      |          1163 |
+| 219095 | SCISSE MORTEAU CUITE IGP 140G       | scisse morteau cuite igp   | saucisse morteau igp cuite                                                                      |          1393 |
+| 168619 | OIGNON JAUNE 1KG C1 FR              | oignon jaune fr            | oignon oignon jaune                                                                             |           130 |
+|  91746 | ECHALOTTE BOTTE J+2                 | echalotte botte            | echalotte                                                                                       |           427 |
+|  57184 | CDP LA CLAPIERE CRU CLAS RS 75CL    | cdp clapiere cru clas rs   | rs                                                                                              |          1540 |
+|  70613 | COFFRET ORFEVRE 37,5CL              | coffret orfevre            | coffret cadeau ninkasi classique ninkasi blonde ninkasi ambree ninkasi french ipa ninkasi noire |           181 |
 
 ---
 # Appariement magasin
